@@ -1,12 +1,8 @@
-import 'package:carpooldriversversion/home/bottom_navigation.dart';
-import 'package:carpooldriversversion/home/routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
 import 'package:carpooldriversversion/Shared/components/components.dart';
-import 'package:provider/provider.dart';
 
-import 'ChangeNotifier.dart';
 
 class AddRide extends StatefulWidget {
   const AddRide({Key? key}) : super(key: key);
