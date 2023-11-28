@@ -1,4 +1,5 @@
 import 'package:carpooldriversversion/Modules/login/Login.dart';
+import 'package:carpooldriversversion/home/firebase_post_ride.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
@@ -47,8 +48,8 @@ class _AddRideState extends State<AddRide> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20,),
-              defaultTextInputField(title: "Driver",hint: "Ahmed" , controller: driverController, type: TextInputType.name),
-              const SizedBox(height: 20,),
+              // defaultTextInputField(title: "Driver",hint: "Ahmed" , controller: driverController, type: TextInputType.name),
+              // const SizedBox(height: 20,),
               defaultTextInputField(title: "From",hint:"Rehab",controller: fromController,type: TextInputType.streetAddress),
               const SizedBox(height: 20,),
               defaultTextInputField(title: "To",hint:"asu",controller: toController,type: TextInputType.streetAddress),
@@ -68,35 +69,39 @@ class _AddRideState extends State<AddRide> {
               defaultButton(radius:24 ,
                   fontSize: 12,
                   function: ()
-                  {
-                    String driver = driverController.text;
-                    String from = fromController.text;
-                    String to = toController.text;
+                  async {
+                    String from = fromController.text.trim();
+                    String to = toController.text.trim();
                     print("before price");
                     double price = double.parse(priceController.text);
-                    String car = carController.text;
+                    String car = carController.text.trim();
                     print("before available seats");
                     double availableSeats = double.parse(availableSeatsController.text);
 
-                    if(driver.isEmpty || from.isEmpty || to.isEmpty  || car.isEmpty  || selectedDate == null || selectedTime == null || price == null || availableSeats == null){
+                    if(from.isEmpty || to.isEmpty  || car.isEmpty  || selectedDate == null || selectedTime == null || price == null || availableSeats == null){
                       print('please enter a valid data');
                       // showToast(text: 'please enter a valid data', error: true);
                       return;
                     }
-                    else{
-                      setState(() {
-                        driverController.clear();
-                        fromController.clear();
-                        toController.clear();
-                        priceController.clear();
-                        carController.clear();
-                        availableSeatsController.clear();
-                        selectedDate = null;
-                        selectedTime = null;
-                      });
-                      print("ride added");
-                      }
+                    else {
+                      await postRideToFirestore(
+                          from,
+                          to,
+                          price,
+                          car,
+                          availableSeats,
+                          selectedDate!,
+                          selectedTime!,
+                          context);
+                      fromController.clear();
+                      toController.clear();
+                      priceController.clear();
+                      carController.clear();
+                      availableSeatsController.clear();
+                      selectedDate = null;
+                      selectedTime = null;
 
+                    }
                   },
                   text: 'add ride',
                   toUpper: true),

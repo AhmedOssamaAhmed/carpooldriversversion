@@ -1,8 +1,10 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../colors/common_colors.dart';
 SharedPreferences? preferences;
@@ -237,3 +239,40 @@ Future<bool> saveToken(String token) => preferences!.setString('token', token);
 Future<bool> removeToken() => preferences!.remove('token');
 
 String? getToken() => preferences!.getString('token');
+
+String formatTimeOfDay(TimeOfDay timeOfDay) {
+  final now = DateTime.now();
+  final dateTime = DateTime(now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
+  final formatter = DateFormat.Hm(); // Use Hm for 24-hour format, or 'jm' for 12-hour format with AM/PM
+  return formatter.format(dateTime);
+}
+String formatDate(DateTime dateTime) {
+  String day = dateTime.day.toString().padLeft(2, '0');
+  String month = dateTime.month.toString().padLeft(2, '0');
+  String year = dateTime.year.toString();
+
+  return '$day/$month/$year';
+}
+
+Future<String?> getUserName(String userId) async {
+  try {
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (userSnapshot.exists) {
+      Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+
+      // Assuming 'name' is a field in the user document
+      String firstName = userData['firstName'];
+      String lastName = userData['lastName'];
+      String userName = firstName + " " + lastName;
+      return userName;
+    } else {
+      // The document with the given user ID does not exist
+      print('User with ID $userId does not exist');
+      return null;
+    }
+  } catch (e) {
+    print('Error retrieving user name: $e');
+    return null;
+  }
+}

@@ -1,3 +1,20 @@
+import 'package:carpooldriversversion/Shared/components/components.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Future<List<DocumentSnapshot>> getRidesByHost(String uID) async {
+  try {
+    QuerySnapshot ridesQuery = await FirebaseFirestore.instance
+        .collection('rides')
+        .where('host', isEqualTo: uID)
+        .get();
+
+    return ridesQuery.docs;
+  } catch (e) {
+    print('Error retrieving rides: $e');
+    showToast(text: "can't fetch rides", error: true);
+    return [];
+  }
+}
 
 String getStatusForRoute(int id,List<Map> my_requests) {
   for (var request in my_requests) {
@@ -24,4 +41,16 @@ class sharedData {
     {4:'finished'},
     {3:'finished'},
   ];
+  Future<void> fetchAvailableRoutes() async {
+    try {
+      String? uID = getToken();
+      List<DocumentSnapshot> rides = await getRidesByHost(uID!);
+      // Update the available_routes list with the fetched rides
+      availble_routes = rides.map((ride) => ride.data() as Map).toList();
+      print(availble_routes);
+    } catch (e) {
+      print('Error fetching available routes: $e');
+      showToast(text: "Error Fetching rides", error: true);
+    }
+  }
 }

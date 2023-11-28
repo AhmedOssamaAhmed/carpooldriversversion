@@ -17,6 +17,7 @@ class _historyState extends State<history> {
   @override
   Widget build(BuildContext context) {
     final sharedData _sharedData = sharedData();
+    _sharedData.fetchAvailableRoutes();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
