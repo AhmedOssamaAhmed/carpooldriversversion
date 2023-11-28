@@ -1,3 +1,4 @@
+import 'package:carpooldriversversion/Modules/login/Login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
@@ -26,6 +27,12 @@ class _AddRideState extends State<AddRide> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: (){
+            navigateAndFinish(context, Login());
+          },
+          icon: Icon(Icons.logout),
+        ),
         title: appbarText("Add Ride"),
         centerTitle: true,
         iconTheme: IconThemeData(

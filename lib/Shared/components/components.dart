@@ -1,10 +1,11 @@
-// import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../colors/common_colors.dart';
-
+SharedPreferences? preferences;
 
 // Button
 Widget defaultButton({
@@ -20,7 +21,7 @@ Widget defaultButton({
   decoration: BoxDecoration(
       color: background,
       borderRadius: BorderRadius.circular(radius),
-    border: Border.all(color: defaultColor, )
+      border: Border.all(color: defaultColor, )
   ),
   child: ElevatedButton(style: ElevatedButton.styleFrom(
     backgroundColor: background,
@@ -29,9 +30,9 @@ Widget defaultButton({
     child: Text(
       toUpper ? text.toUpperCase() : text,
       style: TextStyle(
-        fontSize: fontSize,
-        color: textcolor
-    ),),
+          fontSize: fontSize,
+          color: textcolor
+      ),),
   ),
 );
 
@@ -50,11 +51,11 @@ Widget defaultTextInputField({
     top: 10,
   ),
   decoration: BoxDecoration(
-    boxShadow: [
-      BoxShadow(color: Colors.grey.withOpacity(0.5),
-      spreadRadius: 1,
-      offset: Offset(1,3))
-    ],
+      boxShadow: [
+        BoxShadow(color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            offset: Offset(1,3))
+      ],
       color: Colors.white,
       borderRadius: BorderRadius.circular(16)
   ),
@@ -62,13 +63,13 @@ Widget defaultTextInputField({
     children: [
       detailsText(title!),
       TextFormField(
-          controller: controller,
-          obscureText: safe,
-          decoration: InputDecoration(
-            hintStyle: TextStyle(fontSize: 16, color: Colors.grey[300]),
-              border: InputBorder.none,
-              hintText: hint,
-          ),
+        controller: controller,
+        obscureText: safe,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontSize: 16, color: Colors.grey[300]),
+          border: InputBorder.none,
+          hintText: hint,
+        ),
         keyboardType: type,
       ),
 
@@ -156,10 +157,10 @@ Widget Logo()=>Container(
 
 // navigate to certain page
 void navigateTo(context, widget) => Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => widget,
-  )
+    context,
+    MaterialPageRoute(
+      builder: (context) => widget,
+    )
 );
 
 //navigate to certain page then exit
@@ -213,24 +214,26 @@ void buildProgress({
         ),
       ),
     );
+void hidebuildProgress(BuildContext context) {
+  Navigator.of(context, rootNavigator: true).pop();
+}
+void showToast({@required text, @required error,}) => Fluttertoast.showToast(
+  msg: text.toString(),
+  toastLength: Toast.LENGTH_SHORT,
+  gravity: ToastGravity.BOTTOM,
+  timeInSecForIosWeb: 1,
+  backgroundColor: error ? Colors.red : Colors.green,
+  textColor: Colors.white,
+  fontSize: 16.0,
+);
 
-// void showToast({@required text, @required error,}) => Fluttertoast.showToast(
-//   msg: text.toString(),
-//   toastLength: Toast.LENGTH_SHORT,
-//   gravity: ToastGravity.BOTTOM,
-//   timeInSecForIosWeb: 1,
-//   backgroundColor: error ? Colors.red : Colors.green,
-//   textColor: Colors.white,
-//   fontSize: 16.0,
-// );
+Future<void> initPref() async
+{
+  preferences = await SharedPreferences.getInstance();
+}
 
-// Future<void> initPref() async
-// {
-//   preferences = await SharedPreferences.getInstance();
-// }
-//
-// Future<bool> saveToken(String token) => preferences.setString('token', token);
-//
-// Future<bool> removeToken() => preferences.remove('token');
-//
-// String getToken() => preferences.getString('token');
+Future<bool> saveToken(String token) => preferences!.setString('token', token);
+
+Future<bool> removeToken() => preferences!.remove('token');
+
+String? getToken() => preferences!.getString('token');

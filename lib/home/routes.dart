@@ -1,3 +1,4 @@
+import 'package:carpooldriversversion/Modules/login/Login.dart';
 import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
 import 'package:carpooldriversversion/Shared/components/components.dart';
 import 'package:carpooldriversversion/home/sharedData.dart';
@@ -25,6 +26,12 @@ class _routesState extends State<routes> {
     String routeStatus;
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: (){
+            navigateAndFinish(context, Login());
+          },
+          icon: Icon(Icons.logout),
+        ),
         title: appbarText("My Offered Routes"),
         centerTitle: true,
         iconTheme: IconThemeData(

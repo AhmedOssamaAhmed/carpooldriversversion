@@ -1,3 +1,4 @@
+import 'package:carpooldriversversion/Modules/login/Login.dart';
 import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
 import 'package:carpooldriversversion/Shared/components/components.dart';
 import 'package:carpooldriversversion/home/sharedData.dart';
@@ -18,6 +19,12 @@ class _historyState extends State<history> {
     final sharedData _sharedData = sharedData();
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: (){
+            navigateAndFinish(context, Login());
+          },
+          icon: Icon(Icons.logout),
+        ),
         title: appbarText("Rides History"),
         centerTitle: true,
         iconTheme: IconThemeData(

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:carpooldriversversion/Modules/login/Login.dart';
+import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
 import 'package:carpooldriversversion/Shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,7 +24,20 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultappbar("Profile"),
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: (){
+            navigateAndFinish(context, Login());
+          },
+          icon: Icon(Icons.logout),
+        ),
+        title: appbarText("Profile"),
+        centerTitle: true,
+        iconTheme: IconThemeData(
+          color: mainAppColor, // Change this to the desired color
+        ),
+        backgroundColor: defaultColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
