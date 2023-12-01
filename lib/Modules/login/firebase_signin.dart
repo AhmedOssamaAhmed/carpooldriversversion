@@ -21,17 +21,13 @@ Future<void> signIn(String email,String password,context) async {
       print('User signed in: ${user.uid}');
       String? userID = user.uid;
       showToast(text: userID, error: false);
-      try{ // FIXME: this is not working
-        // initPref();
+      try{
         SharedPreferences mypref = await SharedPreferences.getInstance();
-        print("*********************************");
-        print(userID);
         mypref.setString('token', userID);
-        // saveToken("user logged in");
       }catch(e)
       {
-        print("fffffffffffffffffffffffffffffffffffffff");
         print(e);
+        showToast(text: e, error: true);
       }
     }
 
@@ -39,16 +35,14 @@ Future<void> signIn(String email,String password,context) async {
     navigateAndFinish(context, bottom_navigation());
 
   } catch (e) {
-    print("*********************************");
-    print('osossssssssss$e');
     String error = e.toString();
     print(error);
     if (error == '[firebase_auth/invalid-email] The email address is badly formatted.') {
       print('Wrong email.');
       showToast(text: 'Wrong email.', error: true);
     } else if (error == '[firebase_auth/invalid-credential] The supplied auth credential is incorrect, malformed or has expired.') {
-      print('Wrong password');
-      showToast(text: 'Wrong password', error: true);
+      print('Wrong credential');
+      showToast(text: 'Wrong credential', error: true);
     }
     hidebuildProgress(context);
   }
