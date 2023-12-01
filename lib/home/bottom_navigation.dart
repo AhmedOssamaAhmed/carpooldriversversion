@@ -1,8 +1,8 @@
-import 'package:carpooldriversversion/home/routes.dart';
+import 'package:carpooldriversversion/home/my_rides.dart';
 import 'package:carpooldriversversion/home/history.dart';
 import 'package:flutter/material.dart';
 import 'package:carpooldriversversion/home/addride.dart';
-
+import 'package:carpooldriversversion/home/my_requests.dart';
 import '../Modules/profile/Profile.dart';
 
 class bottom_navigation extends StatefulWidget {
@@ -15,7 +15,8 @@ class _bottom_navigationState extends State<bottom_navigation>
   int SelectedIndex = 0;
 List<Widget> myWidgets=[
   AddRide(),
-  routes(),
+  my_rides(),
+  requests(),
   history(),
   Profile(),
 ];
@@ -53,10 +54,13 @@ Widget build(BuildContext context) {
             icon: Icon(Icons.add),
           ),
           BottomNavigationBarItem(
+            label: "My Rides",
+            icon: Icon(Icons.transfer_within_a_station),
+          ),
+          BottomNavigationBarItem(
             label: "Requests",
             icon: Icon(Icons.pending_outlined),
           ),
-
           BottomNavigationBarItem(
               label: "History",
               icon: Icon(Icons.history),

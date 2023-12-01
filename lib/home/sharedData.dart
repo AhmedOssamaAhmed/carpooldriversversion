@@ -53,4 +53,25 @@ class sharedData {
       showToast(text: "Error Fetching rides", error: true);
     }
   }
+  // remove ride by id attribute
+  Future<void> removeRide(int rideID,context) async {
+    try {
+      buildProgress(text: "Deleting Ride ...", context: context, error: false);
+      await FirebaseFirestore.instance
+          .collection('rides')
+          .where('id', isEqualTo: rideID).get().then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
+      // await fetchAvailableRoutes();
+      hidebuildProgress(context);
+      showToast(text: "Ride deleted", error: false);
+    } catch (e) {
+      hidebuildProgress(context);
+      print('Error deleting ride: $e');
+      showToast(text: "can't delete ride", error: true);
+    }
+  }
+
 }

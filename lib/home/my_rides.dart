@@ -4,14 +4,14 @@ import 'package:carpooldriversversion/Shared/components/components.dart';
 import 'package:carpooldriversversion/home/sharedData.dart';
 import 'package:flutter/material.dart';
 
-class routes extends StatefulWidget {
-  const routes({super.key});
+class my_rides extends StatefulWidget {
+  const my_rides({super.key});
 
   @override
-  State<routes> createState() => _routesState();
+  State<my_rides> createState() => _my_ridesState();
 }
 
-class _routesState extends State<routes> {
+class _my_ridesState extends State<my_rides> {
   final sharedData _sharedData = sharedData();
 
 
@@ -22,10 +22,6 @@ class _routesState extends State<routes> {
   int cartItemCount = 2;
   @override
   Widget build(BuildContext context) {
-    // availble_routes = _sharedData.availble_routes!;
-    // my_requests = _sharedData.my_requests!;
-    // _sharedData.fetchAvailableRoutes();
-    String routeStatus;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -52,6 +48,9 @@ class _routesState extends State<routes> {
             return Center(child: Text(snapshot.error.toString()));
           }
           else if (snapshot.connectionState == ConnectionState.done){
+            if(_sharedData.availble_routes!.isEmpty) {
+              return Center(child: captionText("You haven't offered any rides yet"));
+            } else{
             return Column(children: [
               Expanded(
                   child: ListView.builder(
@@ -100,33 +99,31 @@ class _routesState extends State<routes> {
                                       Container(width: 80,height: 20,
                                         child: FloatingActionButton(
                                           onPressed: ()async{
-                                            setState(() {
-                                              String status = getStatusForRoute(_sharedData.availble_routes![index]['id'],_sharedData.my_requests!);
+                                            // setState(() {
+                                              String status = _sharedData.availble_routes![index]['status'];
                                               print(status);
                                               showDialog(context: context,
                                                   builder:(context) {
                                                     return AlertDialog(
-                                                      title: const Text("Confirm Acceptance"),
-                                                      content: const Text("choose whether to accept or reject this ride"),
+                                                      title: const Text("Confirm Removal"),
+                                                      content: const Text("Are you sure you want to remove this ride ?"),
                                                       actions: [
                                                         TextButton(
-                                                            child: const Text("reject"),
+                                                            child: const Text("CANCEL"),
                                                             onPressed: ()async{
                                                               setState(() {
-                                                                _sharedData.my_requests[index] = {_sharedData.availble_routes![index]['id']:'rejected'};
-                                                                print(_sharedData.my_requests);
+                                                                // _sharedData.my_requests[index] = {_sharedData.availble_routes![index]['id']:'rejected'};
+                                                                // print(_sharedData.my_requests);
                                                                 Navigator.of(context).pop();
                                                               });
                                                             }
                                                         ),
                                                         TextButton(
-                                                            child: const Text("Confirm"),
+                                                            child: const Text("remove"),
                                                             onPressed: ()async{
-                                                              setState(() {
-                                                                _sharedData.my_requests[index] = {_sharedData.availble_routes![index]['id']:'accepted'};
-                                                                print(_sharedData.my_requests);
-                                                                print("Accepted");
+                                                                await _sharedData.removeRide(_sharedData.availble_routes![index]['id'],context);
                                                                 Navigator.of(context).pop();
+                                                              setState(() {
                                                               });
 
                                                             }
@@ -135,22 +132,22 @@ class _routesState extends State<routes> {
                                                     );
                                                   }
                                               );
-                                            });
+                                            // });
                                           },
                                           shape: RoundedRectangleBorder(
                                               borderRadius: BorderRadius.circular(10)
                                           ),
-                                          backgroundColor:  getStatusForRoute(_sharedData.availble_routes![index]['id'],_sharedData.my_requests!) == 'pending' ? Colors.yellow
-                                              : getStatusForRoute(_sharedData.availble_routes![index]['id'],_sharedData.my_requests!) == 'accepted' ? Colors.blue
-                                              : getStatusForRoute(_sharedData.availble_routes![index]['id'],_sharedData.my_requests!) == 'rejected' ? Colors.red
+                                          backgroundColor:  _sharedData.availble_routes![index]['status'] == 'pending' ? Colors.yellow
+                                              : _sharedData.availble_routes![index]['status'] == 'accepted' ? Colors.blue
+                                              : _sharedData.availble_routes![index]['status'] == 'rejected' ? Colors.red
                                               : Colors.lightGreen,
-                                          child:getStatusForRoute(_sharedData.availble_routes![index]['id'],_sharedData.my_requests!) == 'pending'
-                                              ? const Text("Pending")
-                                              : getStatusForRoute(_sharedData.availble_routes![index]['id'],_sharedData.my_requests!) == 'accepted'
+                                          child:_sharedData.availble_routes![index]['status'] == 'available'
+                                              ? const Text("available")
+                                              : _sharedData.availble_routes![index]['status'] == 'accepted'
                                               ? const Text("Accepted")
-                                              : getStatusForRoute(_sharedData.availble_routes![index]['id'],_sharedData.my_requests!) == 'rejected'
+                                              : _sharedData.availble_routes![index]['status'] == 'rejected'
                                               ? const Text("Rejected")
-                                              : const Text("Unkown"),
+                                              : const Text("unknown"),
 
                                         ),
                                       ), // accepting container
@@ -165,8 +162,9 @@ class _routesState extends State<routes> {
 
             ]);
           }
+          }
           else{
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: Text("You haven't offered any rides yet"));
           }
         }
       )
