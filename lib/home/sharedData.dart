@@ -15,6 +15,17 @@ Future<List<DocumentSnapshot>> getRidesByHost(String uID) async {
     return [];
   }
 }
+Future<List<DocumentSnapshot>> getMyRequests() async {
+  try{
+    QuerySnapshot requests = await FirebaseFirestore.instance.collection('requests').get();
+    return requests.docs;
+  }catch(e){
+    print("Error retrieving requests: $e");
+    showToast(text: "can't fetch requests", error: true);
+    return [];
+  }
+}
+
 
 String getStatusForRoute(int id,List<Map> my_requests) {
   for (var request in my_requests) {
@@ -43,14 +54,17 @@ class sharedData {
   // ];
   List<Map> my_finished_requests = [];
   List<Map> all_routes = [];
+  List<Map> rides_of_my_request = [];
 
   Future<void> fetchAvailableRoutes() async {
     try {
       String? uID = getToken();
       List<DocumentSnapshot> rides = await getRidesByHost(uID!);
+      List<DocumentSnapshot> requests = await getMyRequests();
       // Update the available_routes list with the fetched rides
       availble_routes = rides.map((ride) => ride.data() as Map).toList();
       all_routes = rides.map((ride) => ride.data() as Map).toList();
+      my_requests = requests.map((ride) => ride.data() as Map).toList();
 
       int looping_length = availble_routes.length;
       for (var i = 0; i< looping_length; i++) {
@@ -60,8 +74,29 @@ class sharedData {
           looping_length --;
         }
       }
+      int requests_looping = my_requests.length;
+      rides_of_my_request = [];
+      for(var i=0; i<requests_looping;i++){
+        print(my_requests[i]);
+
+        bool requestExists = availble_routes.any((record) => record['id'] == my_requests[i]['id']);
+        if(requestExists && my_requests[i]['status']!='finished'){
+          print(requestExists);
+          print("yesssssssssssssssssssssssss");
+          availble_routes[i]['request_id'] = my_requests[i]['request_id'];
+          rides_of_my_request.add(availble_routes[i]);
+
+        }
+      }
+      print(rides_of_my_request);
+      print("***************************");
       print(availble_routes);
+      print("----------------------------");
       print(my_finished_requests);
+      print("///////////////////////////////");
+      print(my_requests);
+      print("8888888888888888888888888");
+      print(all_routes);
     } catch (e) {
       print('Error fetching available routes: $e');
       showToast(text: "Error Fetching rides", error: true);
@@ -85,6 +120,36 @@ class sharedData {
       hidebuildProgress(context);
       print('Error deleting ride: $e');
       showToast(text: "can't delete ride", error: true);
+    }
+  }
+  Future<void> updateRequest(String requestId, Map<String, dynamic> updatedData,context) async {
+    try {
+      buildProgress(text: "Approving ...", context: context, error: false);
+      // Replace 'requests' with your actual collection name
+      CollectionReference requestsCollection = FirebaseFirestore.instance.collection('requests');
+
+      // Find the document with the matching request_id
+      QuerySnapshot querySnapshot = await requestsCollection.where('request_id', isEqualTo: requestId).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Update the first document found with the matching request_id
+        DocumentReference documentReference = requestsCollection.doc(querySnapshot.docs.first.id);
+
+        // Update the document with the provided data
+        await documentReference.update(updatedData);
+
+        print('Document with request_id $requestId updated successfully.');
+        showToast(text: "status updated", error: false);
+      } else {
+        print('No document found with request_id $requestId.');
+        showToast(text: "request not found", error: true);
+      }
+      hidebuildProgress(context);
+    } catch (e) {
+      hidebuildProgress(context);
+      print('Error updating document: $e');
+      showToast(text: "Failed to update status", error: true);
+      // Handle error as needed
     }
   }
 
