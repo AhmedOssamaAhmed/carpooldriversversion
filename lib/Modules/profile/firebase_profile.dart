@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:carpooldriversversion/Shared/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -34,6 +35,18 @@ class firebase_profile{
         print(age);
         print(grade);
         print(image_url);
+        // try{
+        // Databasev2 mydb = Databasev2();
+        // await mydb.write(
+        //     "INSERT INTO profile (uid,firstName,lastName,phone,age,grade) VALUES"
+        //         " ('$uID','$first_name','$last_name','$phone_number','$age','$grade')"
+        //     , "profile");
+        // print("msh a7eeh");
+        // }
+        // catch(e){
+        //   print("A7eeh");
+        //   print(e);
+        // }
         print("Done");
       } else {
         // The document with the given user ID does not exist

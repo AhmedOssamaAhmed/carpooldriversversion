@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carpooldriversversion/Modules/login/Login.dart';
 import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
 import 'package:carpooldriversversion/Shared/components/components.dart';
@@ -20,7 +22,16 @@ class _requestsState extends State<requests> {
 
   var button_color = Colors.lightGreen;
   int cartItemCount = 2;
+  Timer? _timer;
+  static const Duration reloadDuration = const Duration(seconds:10);
+
   @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(reloadDuration, (Timer timer) {
+      setState(() {});
+    });
+  }
   Widget build(BuildContext context) {
     // availble_routes = _sharedData.rides_of_my_request!;
     // my_requests = _sharedData.my_requests!;

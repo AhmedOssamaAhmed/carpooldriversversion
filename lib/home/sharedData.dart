@@ -122,7 +122,7 @@ class sharedData {
       showToast(text: "can't delete ride", error: true);
     }
   }
-  Future<void> updateRequest(String requestId, Map<String, dynamic> updatedData,context) async {
+  Future<void> updateRequest(int requestId, Map<String, dynamic> updatedData,context) async {
     try {
       buildProgress(text: "Approving ...", context: context, error: false);
       // Replace 'requests' with your actual collection name

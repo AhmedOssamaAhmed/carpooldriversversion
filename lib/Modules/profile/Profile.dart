@@ -5,6 +5,7 @@ import 'package:carpooldriversversion/Modules/profile/firebase_profile.dart';
 import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
 import 'package:carpooldriversversion/Shared/components/components.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +26,7 @@ class _ProfileState extends State<Profile> {
   File? _image;
   final picker = ImagePicker();
   firebase_profile _firebase_profile = firebase_profile();
+  var connectivityResult = Connectivity().checkConnectivity();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +53,9 @@ class _ProfileState extends State<Profile> {
             }
             else if(snapshot.hasError){
               return Center(child: Text(snapshot.error.toString()));
+            }else if(connectivityResult == ConnectivityResult.none){
+              print("no connection");
+              return Center(child: Text('No network connection.'));
             }
             else if(snapshot.connectionState == ConnectionState.done){
               return SingleChildScrollView(
