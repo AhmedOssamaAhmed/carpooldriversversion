@@ -23,6 +23,12 @@ class _AddRideState extends State<AddRide> {
   TextEditingController availableSeatsController = TextEditingController();
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  List<TimeOfDay> allowedTimes = [
+    TimeOfDay(hour: 7, minute: 30),
+    TimeOfDay(hour: 17, minute: 30),
+  ];
+  bool from_read_only = false;
+  bool to_read_only = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +53,72 @@ class _AddRideState extends State<AddRide> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Container(
+                width: 334,
+                padding: EdgeInsetsDirectional.only(
+                  start: 10,
+                  end: 10,
+                  top: 10,
+                ),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      offset: Offset(1, 3),
+                    ),
+                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Time",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: allowedTimes.map((TimeOfDay time) {
+                        return Row(
+                          children: [
+                            Radio<TimeOfDay>(
+                              value: time,
+                              groupValue: selectedTime,
+                              onChanged: (TimeOfDay? newValue) {
+                                setState(() {
+                                  selectedTime = newValue;
+                                  if(selectedTime == TimeOfDay(hour: 7, minute: 30)){
+                                    print("7:30");
+                                    toController.text = "asu";
+                                    fromController.text = "";
+                                    to_read_only = true;
+                                    from_read_only = false;
+                                  }
+                                  else if(selectedTime == TimeOfDay(hour: 17, minute: 30)){
+                                    print("17:30");
+                                    fromController.text = "asu";
+                                    toController.text = "";
+                                    from_read_only = true;
+                                    to_read_only = false;
+                                  }
+                                });
+                              },
+                            ),
+                            Text(time.format(context)),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                ),
+              ),
               const SizedBox(height: 20,),
-              // defaultTextInputField(title: "Driver",hint: "Ahmed" , controller: driverController, type: TextInputType.name),
-              // const SizedBox(height: 20,),
-              defaultTextInputField(title: "From",hint:"Rehab",controller: fromController,type: TextInputType.streetAddress),
+              defaultTextInputField(title: "From",hint:"Enter start point",controller: fromController,type: TextInputType.streetAddress,readOnly: from_read_only),
               const SizedBox(height: 20,),
-              defaultTextInputField(title: "To",hint:"asu",controller: toController,type: TextInputType.streetAddress),
+              defaultTextInputField(title: "To",hint:"Enter destination",controller: toController,type: TextInputType.streetAddress,readOnly: to_read_only),
               const SizedBox(height: 20,),
               defaultTextInputField(title: "Price",hint:"50",controller: priceController,type: TextInputType.number),
               const SizedBox(height: 20,),
@@ -62,8 +128,8 @@ class _AddRideState extends State<AddRide> {
               const SizedBox(height: 20,),
               dateFieldWithTitle("Date", selectedDate),
               // defaultTextInputField(title: "Time",hint:"3:00 PM",controller: timeController,type: TextInputType.datetime),
-              const SizedBox(height: 20,),
-              timeFieldWithTitle("Time", selectedTime),
+
+              // timeFieldWithTitle("Time", selectedTime),
               // defaultTextInputField(title: "Date",hint:"30/10/2023",controller: dateController,type: TextInputType.datetime),
               SizedBox(height: 20),
               defaultButton(radius:24 ,
@@ -72,15 +138,25 @@ class _AddRideState extends State<AddRide> {
                   async {
                     String from = fromController.text.trim();
                     String to = toController.text.trim();
-                    print("before price");
-                    double price = double.parse(priceController.text);
+                    double availableSeats;
+                    double price;
+                    try{
+                      availableSeats = double.parse(availableSeatsController.text);
+                      price = double.parse(priceController.text);
+                    }catch(e){
+                      print('price and available seats must be numbers');
+                      showToast(text: "price and available seats must be numbers", error: true);
+                      return;
+                    }
                     String car = carController.text.trim();
-                    print("before available seats");
-                    double availableSeats = double.parse(availableSeatsController.text);
 
-                    if(from.isEmpty || to.isEmpty  || car.isEmpty  || selectedDate == null || selectedTime == null || price == null || availableSeats == null){
+                    if(from.isEmpty || to.isEmpty  || car.isEmpty  || selectedDate == null || selectedTime == null ){
                       print('please enter a valid data');
-                      // showToast(text: 'please enter a valid data', error: true);
+                      showToast(text: 'please enter a valid data', error: true);
+                      return;
+                    }else if(availableSeats > 6){
+                      print('please enter a valid number of seats');
+                      showToast(text: "your car can't have more than 6 available seats", error: true);
                       return;
                     }
                     else {
@@ -112,67 +188,7 @@ class _AddRideState extends State<AddRide> {
     );
   }
 
-  Widget timeFieldWithTitle(String title, TimeOfDay? selectedTime) {
-    return Container(
-      width: 334,
-      padding: EdgeInsetsDirectional.only(
-        start: 10,
-        end: 10,
-        top: 10,
-      ),
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            offset: Offset(1, 3),
-          )
-        ],
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          InkWell(
-            onTap: () async {
-              TimeOfDay? pickedTime = await showTimePicker(
-                context: context,
-                initialTime: selectedTime ?? TimeOfDay.now(),
-              );
 
-              if (pickedTime != null && pickedTime != selectedTime) {
-                setState(() {
-                  this.selectedTime = pickedTime;
-                });
-              }
-            },
-            child: Container(
-              height: 50,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                      selectedTime != null ? "${selectedTime.format(context)}" : "Select Time"),
-                  Icon(Icons.access_time),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
   Widget dateFieldWithTitle(String title, DateTime? selectedDate) {
     return Container(
       width: 334,
@@ -202,10 +218,14 @@ class _AddRideState extends State<AddRide> {
           SizedBox(height: 8),
           InkWell(
             onTap: () async {
+              DateTime tomorrow = DateTime.now().add(Duration(days: 1));
+              DateTime initialDate = selectedTime == TimeOfDay(hour: 7, minute: 30)
+              ? tomorrow
+                  : DateTime.now();
               DateTime? pickedDate = await showDatePicker(
                 context: context,
-                initialDate: selectedDate ?? DateTime.now(),
-                firstDate: DateTime.now(),
+                initialDate: initialDate,
+                firstDate: initialDate,
                 lastDate: DateTime(DateTime.now().year + 5),
               );
 

@@ -41,6 +41,7 @@ Widget defaultButton({
 
 // Input field
 Widget defaultTextInputField({
+  bool readOnly = false,
   bool safe = false,
   String? title,
   String hint = '',
@@ -73,6 +74,8 @@ Widget defaultTextInputField({
           hintText: hint,
         ),
         keyboardType: type,
+        autocorrect: true,
+        readOnly: readOnly,
       ),
 
     ],
