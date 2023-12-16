@@ -254,7 +254,8 @@ String formatDate(DateTime dateTime) {
   String month = dateTime.month.toString().padLeft(2, '0');
   String year = dateTime.year.toString();
 
-  return '$day/$month/$year';
+  // return '$day/$month/$year';
+  return '$year-$month-$day';
 }
 
 Future<String?> getUserName(String userId) async {

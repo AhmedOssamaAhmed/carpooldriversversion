@@ -112,8 +112,17 @@ class _requestsState extends State<requests> {
                                         child: FloatingActionButton(
                                           onPressed: ()async{
                                             setState(() {
-                                              String status = getStatusForRoute(_sharedData.rides_of_my_request![index]['id'],_sharedData.my_requests!);
+                                              int id = _sharedData.rides_of_my_request![index]['id'];
+                                              String? status;
+                                              for(var ride in _sharedData.my_requests){
+                                                if(ride['id'] == id){
+                                                  status = ride['status'];
+                                                }
+                                              }
                                               print(status);
+                                              if(status == 'canceled'){
+                                                return;
+                                              }else{
                                               showDialog(context: context,
                                                   builder:(context) {
                                                     return AlertDialog(
@@ -145,7 +154,7 @@ class _requestsState extends State<requests> {
                                                       ],
                                                     );
                                                   }
-                                              );
+                                              );}
                                             });
                                           },
                                           shape: RoundedRectangleBorder(
@@ -154,14 +163,16 @@ class _requestsState extends State<requests> {
                                           backgroundColor:  _sharedData.my_requests[index]['status'] == 'pending' ? Colors.yellow
                                               : _sharedData.my_requests[index]['status'] == 'accepted' ? Colors.blue
                                               : _sharedData.my_requests[index]['status'] == 'rejected' ? Colors.red
-                                              : Colors.lightGreen,
+                                              : Colors.blueGrey,
                                           child:_sharedData.my_requests[index]['status'] == 'pending'
                                               ? const Text("Pending")
                                               : _sharedData.my_requests[index]['status'] == 'accepted'
                                               ? const Text("Accepted")
                                               : _sharedData.my_requests[index]['status'] == 'rejected'
                                               ? const Text("Rejected")
-                                              : const Text("Unkown"),
+                                              : _sharedData.my_requests[index]['status'] == 'canceled'
+                                              ? const Text("Canceled")
+                                              : const Text("Unkonwn"),
 
                                         ),
                                       ), // accepting container
