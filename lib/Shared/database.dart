@@ -1,92 +1,68 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-class Databasev2 {
-  Database? mydatabase;
+class DatabaseHelper {
+  static Database? _database;
+  static final _tableName = 'user_table';
 
-  Future<Database?> checkdata(db_name) async {
-    if (mydatabase == null) {
-      mydatabase = await creating(db_name);
-      return mydatabase;
-    } else {
-      return mydatabase;
+  // Singleton pattern to ensure only one instance of the database is created
+  static Future<Database> get database async {
+    if (_database != null) {
+      return _database!;
     }
+
+    _database = await initDatabase();
+    return _database!;
   }
 
-  int Version = 2;
-  creating(db_name) async {
-    String databasepath = await getDatabasesPath();
-    String mypath = join(databasepath, '${db_name}.db');
-    if(db_name == "profile"){
-      Database mydb =
-      await openDatabase(mypath, version: Version, onCreate: (db, version) {
-        db.execute('''CREATE TABLE IF NOT EXISTS 'profile'(
-        'uid' TEXT NOT NULL PRIMARY KEY,
-        'firstName' TEXT NOT NULL,
-        'lastName' TEXT NOT NULL,
-        'phone' TEXT NOT NULL,
-        'age' TEXT NOT NULL,
-        'grade' TEXT NOT NULL,
-        )''');
-      });
-      return mydb;
-    }else if(db_name == "history"){
-      Database mydb =
-      await openDatabase(mypath, version: Version, onCreate: (db, version) {
-        db.execute('''CREATE TABLE IF NOT EXISTS 'history'(
-      'ID' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      'id' INTEGER NOT NULL,
-      'driver' TEXT NOT NULL,
-      'date' TEXT NOT NULL,
-      'time' TEXT NOT NULL,
-      'from' TEXT NOT NULL,
-      'to' TEXT NOT NULL,
-      'price' INTEGER NOT NULL,
-      'car' TEXT NOT NULL,
-      'seats' INTEGER NOT NULL,
-      'status' TEXT NOT NULL,
-      'host' TEXT NOT NULL,
-      )''');
-      });
-      return mydb;
-    }
+  static Future<Database> initDatabase() async {
+    String path = join(await getDatabasesPath(), 'your_database.db');
+
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute('''
+          CREATE TABLE $_tableName (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT,
+            last_name TEXT,
+            phone_number TEXT,
+            age TEXT,
+            grade TEXT,
+            image_url TEXT
+          )
+        ''');
+      },
+    );
   }
 
-  isexist() async {
-    String databasepath = await getDatabasesPath();
-    String mypath = join(databasepath, 'mynewdatafile2.db');
-    await databaseExists(mypath) ? print("it exists") : print("not exist");
-  }
+  static Future<void> saveUserData({
+    required String? firstName,
+    required String? lastName,
+    required String? phoneNumber,
+    required String? age,
+    required String? grade,
+    required String? imageUrl
+  }) async {
+    final Database db = await database;
 
-  reseting() async {
-    String databasepath = await getDatabasesPath();
-    String mypath = join(databasepath, 'mynewdatafile2.db');
-    await deleteDatabase(mypath);
+    await db.insert(
+      _tableName,
+      {
+        'first_name': firstName,
+        'last_name': lastName,
+        'phone_number': phoneNumber,
+        'age': age,
+        'grade': grade,
+        'image_url': imageUrl,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
+  static Future<List<Map<String, dynamic>>> getUsers() async {
+    final Database db = await database;
 
-  reading(sql,db_name) async {
-    Database? somevar = await checkdata(db_name);
-    var myesponse = somevar!.rawQuery(sql);
-    return myesponse;
-  }
-
-  write(sql,db_name) async {
-    Database? somevar = await checkdata(db_name);
-    var myesponse = somevar!.rawInsert(sql);
-    return myesponse;
-  }
-
-  update(sql,db_name) async {
-    print("updating");
-    Database? somevar = await checkdata(db_name);
-    var myesponse = somevar!.rawUpdate(sql);
-    print("done update");
-    return myesponse;
-  }
-
-  delete(sql,db_name) async {
-    Database? somevar = await checkdata(db_name);
-    var myesponse = somevar!.rawDelete(sql);
-    return myesponse;
+    return await db.query(_tableName);
   }
 }

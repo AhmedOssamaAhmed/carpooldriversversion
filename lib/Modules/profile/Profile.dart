@@ -53,9 +53,6 @@ class _ProfileState extends State<Profile> {
             }
             else if(snapshot.hasError){
               return Center(child: Text(snapshot.error.toString()));
-            }else if(connectivityResult == ConnectivityResult.none){
-              print("no connection");
-              return Center(child: Text('No network connection.'));
             }
             else if(snapshot.connectionState == ConnectionState.done){
               return SingleChildScrollView(
@@ -115,7 +112,7 @@ class _ProfileState extends State<Profile> {
           Row(
             children: [
               Text(
-                value!,
+                value ?? '',
                 style: TextStyle(fontSize: 16),
               ),
               IconButton(
