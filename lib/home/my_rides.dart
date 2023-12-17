@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carpooldriversversion/Modules/login/Login.dart';
 import 'package:carpooldriversversion/Shared/colors/common_colors.dart';
 import 'package:carpooldriversversion/Shared/components/components.dart';
@@ -20,7 +22,16 @@ class _my_ridesState extends State<my_rides> {
 
   var button_color = Colors.lightGreen;
   int cartItemCount = 2;
+  Timer? _timer;
+  static const Duration reloadDuration = const Duration(seconds:10);
+
   @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(reloadDuration, (Timer timer) {
+      setState(() {});
+    });
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -36,6 +47,16 @@ class _my_ridesState extends State<my_rides> {
           color: mainAppColor, // Change this to the desired color
         ),
         backgroundColor: defaultColor,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.timer_sharp),
+            onPressed: () async{
+              await selectDateTime(context);
+              print('time selected ${current_time}');
+              setState(() {});
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<void>(
         future: _sharedData.fetchAvailableRoutes(),

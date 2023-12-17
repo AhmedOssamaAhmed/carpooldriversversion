@@ -71,7 +71,7 @@ class sharedData {
 
         }
       }
-      DateTime current_time = DateTime.now();
+      // DateTime current_time = DateTime.now();
 
       for(var ride in rides_of_my_request){
         DateTime ride_timing = getDateTimeFromString(ride['date'], ride['time']);
@@ -87,6 +87,21 @@ class sharedData {
           print("c:${current_time},r:${ride_timing}");
           if(current_time.isAfter(ride_timing)){
             updateRequestNoContext(ride['request_id'], {'status':'canceled'});
+          }
+        }
+      }
+      for(var ride in availble_routes){
+        DateTime ride_timing = getDateTimeFromString(ride['date'], ride['time']);
+        if(ride['time'] == '07:30'){
+          ride_timing = ride_timing.subtract(Duration(hours: 9,minutes: 30));
+          if(current_time.isAfter(ride_timing)){
+            updateRide(ride['id'], {'status':'finished'});
+          }
+        }
+        if(ride['time'] == '17:30'){
+          ride_timing = ride_timing.subtract(Duration(hours: 4,minutes: 30));
+          if(current_time.isAfter(ride_timing)){
+            updateRide(ride['id'], {'status':'finished'});
           }
         }
       }

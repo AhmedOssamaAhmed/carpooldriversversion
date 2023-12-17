@@ -51,6 +51,16 @@ class _requestsState extends State<requests> {
           color: mainAppColor, // Change this to the desired color
         ),
         backgroundColor: defaultColor,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.timer_sharp),
+            onPressed: () async{
+              await selectDateTime(context);
+              print('time selected ${current_time}');
+              setState(() {});
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<void>(
         future: _sharedData.fetchAvailableRoutes(),
