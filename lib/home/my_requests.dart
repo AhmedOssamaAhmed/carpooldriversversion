@@ -41,6 +41,7 @@ class _requestsState extends State<requests> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: (){
+            removeToken();
             navigateAndFinish(context, Login());
           },
           icon: Icon(Icons.logout),

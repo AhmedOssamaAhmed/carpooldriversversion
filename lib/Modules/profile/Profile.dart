@@ -34,6 +34,7 @@ class _ProfileState extends State<Profile> {
         leading: IconButton(
           icon: Icon(Icons.logout),
           onPressed: () {
+            removeToken();
             navigateAndFinish(context, Login());
           },
         ),

@@ -37,6 +37,7 @@ class _my_ridesState extends State<my_rides> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: (){
+            removeToken();
             navigateAndFinish(context, Login());
           },
           icon: Icon(Icons.logout),
