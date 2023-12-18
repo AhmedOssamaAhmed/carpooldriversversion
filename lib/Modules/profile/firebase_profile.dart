@@ -74,7 +74,7 @@ class firebase_profile{
       }
     } catch (e) {
       print('Error retrieving user data: $e');
-      showToast(text: "Error retrieving user data", error: true);
+      showToast(text: "please Upload photo", error: true);
     }
   }
 

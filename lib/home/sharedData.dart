@@ -43,6 +43,7 @@ class sharedData {
   List<Map> my_finished_requests = [];
   List<Map> all_routes = [];
   List<Map> rides_of_my_request = [];
+  List<String> customer_names = [];
 
   Future<void> fetchAvailableRoutes() async {
     try {
@@ -63,13 +64,21 @@ class sharedData {
       availble_routes.removeWhere((route) => route['status'] == 'finished');
       int requests_looping = my_requests.length;
       rides_of_my_request = [];
+      customer_names = [];
       for(var i=0; i<requests_looping;i++){
         bool requestExists = availble_routes.any((record) => record['id'] == my_requests[i]['id']);
         if(requestExists && my_requests[i]['status']!='finished'){
           availble_routes[i]['request_id'] = my_requests[i]['request_id'];
           rides_of_my_request.add(availble_routes[i]);
+          // get customer name from availble routes that has same request id
+          String customer_id = my_requests[i]['customer'];
+          String? customer_name = await getUserName(customer_id);
+          customer_names.add(customer_name!);
 
         }
+      }
+      for (var i = 0; i < rides_of_my_request.length; i++) {
+        rides_of_my_request[i]['driver'] = customer_names[i];
       }
       // DateTime current_time = DateTime.now();
 
