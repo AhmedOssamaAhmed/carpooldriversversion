@@ -47,7 +47,18 @@ class _AddRideState extends State<AddRide> {
           color: mainAppColor, // Change this to the desired color
         ),
         backgroundColor: defaultColor,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.timer_sharp),
+            onPressed: () async{
+              await selectDateTime(context);
+              print('time selected ${current_time}');
+              setState(() {});
+            },
+          ),
+        ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -219,10 +230,35 @@ class _AddRideState extends State<AddRide> {
           SizedBox(height: 8),
           InkWell(
             onTap: () async {
-              DateTime tomorrow = DateTime.now().add(Duration(days: 1));
-              DateTime initialDate = selectedTime == TimeOfDay(hour: 7, minute: 30)
-              ? tomorrow
-                  : DateTime.now();
+              DateTime initialDate = DateTime.now();
+              if(selectedTime == TimeOfDay(hour: 7, minute: 30)) {
+                if (current_time.add(Duration(hours: 10)).isAfter(
+                    DateTime(now().year, now().month, now().add(Duration(days: 1)).day, 7, 30))) {
+                  print("c ${current_time.add(Duration(hours: 10))} a ${DateTime(now().year, now().month, now().add(Duration(days: 1)).day, 7, 30)}");
+                  initialDate = current_time.add(Duration(days: 2));
+                }else{
+                  initialDate = current_time.add(Duration(days: 1));
+                }
+              }
+
+
+
+              if (selectedTime == TimeOfDay(hour: 17, minute: 30)) {
+                DateTime currentDateTime = current_time;
+                DateTime deadlineTime = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 12, 30);
+                DateTime newInitialDate;
+
+                if (currentDateTime.isBefore(deadlineTime)) {
+                  newInitialDate = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 17, 30);
+                } else {
+                  newInitialDate = currentDateTime.add(Duration(days: 1)).subtract(Duration(hours: currentDateTime.hour, minutes: currentDateTime.minute));
+                  newInitialDate = DateTime(newInitialDate.year, newInitialDate.month, newInitialDate.day, 17, 30);
+                }
+
+                print("New Initial Date: $newInitialDate");
+                initialDate = newInitialDate;
+              }
+
               DateTime? pickedDate = await showDatePicker(
                 context: context,
                 initialDate: initialDate,
@@ -259,3 +295,9 @@ class _AddRideState extends State<AddRide> {
     );
   }
 }
+
+now() {
+  return current_time;
+}
+
+
