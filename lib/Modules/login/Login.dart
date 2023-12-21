@@ -34,7 +34,7 @@ class Login extends StatelessWidget {
                   const SizedBox(height: 20,),
                   defaultTextInputField(controller: emailController,
                       type: TextInputType.emailAddress,
-                      hint: 'Sarahsmith@gmail.com',
+                      hint: 'Sarahsmith@eng.asu.edu.eg',
                       title: 'Email'),
                   const SizedBox(height: 30,),
                   defaultTextInputField(controller: passwordController,
@@ -49,6 +49,8 @@ class Login extends StatelessWidget {
                       {
                         String email = emailController.text.trim();
                         String password = passwordController.text.trim();
+                        email = email.replaceRange(0, 0, '_driver');
+
                         if(email.isEmpty || password.isEmpty){
                           print('please enter a valid data');
                           showToast(text: 'please enter a valid data', error: true);
@@ -74,9 +76,9 @@ class Login extends StatelessWidget {
                       text: 'Sign UP',
                       toUpper: false),
                   const SizedBox(height: 10,),
-                  InkWell(child:
-                  captionText('Forgot your password ?',),
-                    onTap: (){navigateTo(context, RestPassword());},)
+                  // InkWell(child:
+                  // captionText('Forgot your password ?',),
+                  //   onTap: (){navigateTo(context, RestPassword());},)
 
                 ],
               ),
