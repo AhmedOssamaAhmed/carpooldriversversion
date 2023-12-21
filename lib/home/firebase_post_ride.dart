@@ -9,7 +9,7 @@ Future<void> postRideToFirestore(
     String to,
     double price,
     String car,
-    double seats,
+    int seats,
     DateTime selectedDate,
     TimeOfDay selectedTime,
     context) async {

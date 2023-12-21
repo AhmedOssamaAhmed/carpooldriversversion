@@ -150,14 +150,14 @@ class _AddRideState extends State<AddRide> {
                   async {
                     String from = fromController.text.trim();
                     String to = toController.text.trim();
-                    double availableSeats;
+                    int availableSeats;
                     double price;
                     try{
-                      availableSeats = double.parse(availableSeatsController.text);
+                      availableSeats = int.parse(availableSeatsController.text);
                       price = double.parse(priceController.text);
                     }catch(e){
                       print('price and available seats must be numbers');
-                      showToast(text: "price and available seats must be numbers", error: true);
+                      showToast(text: "Enter valid seat number and price", error: true);
                       return;
                     }
                     String car = carController.text.trim();
